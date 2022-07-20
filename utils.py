@@ -1,4 +1,9 @@
 import re
+import sys
+def usage():
+	print("""
+		python utils.py <conf filename>
+		""")
 
 def is_num_list(line):
 	nlist = line.split()
@@ -56,4 +61,8 @@ def conf2dict(filename):
 		print(key + ":" + params[key])
 
 if __name__ == "__main__":
-	conf2dict("gst_single.conf")	
+	if len(sys.argv != 2):
+		usage()
+		sys.exit()
+	conf2dict(sys.argv[1])
+	

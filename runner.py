@@ -1,7 +1,17 @@
+from subprocess import Popen, PIPE
+import sys
 from parser import TestParser
+
+def usage():
+	print("""
+		python runner.py <location_of_rvs_binary>
+		""")
 
 if __name__ == "__main__":
 	print("hello")
+	if len(sys.argv) == 1:
+		usage()
+		sys.exit()
 	parser = TestParser("gst")
 	testcases = [
 		{ 
@@ -36,5 +46,7 @@ if __name__ == "__main__":
 		}
 		]
 	parser.parse(testcases)
-	print("done")
+	print("conf file: "+parser.conf_file)
+	process = Popen([sys.argv[1], '-c',parser.conf_file], stdout=PIPE,stderr=PIPE)	
+	stdout, stderr = process.communicate()
 
