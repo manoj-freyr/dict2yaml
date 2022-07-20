@@ -8,5 +8,5 @@ Now tightly coupled with ROCm configurations as per RVS : https://github.com/ROC
   `python utils.py <conf filename>`<br>
   reads the file and uses it to list out all the parameters in the conf and spit out a dictionary which has param_name and data type.<br>
   
-  `python runner.py` <br>
+  `python runner.py rvs_bin_location` <br>
   takes input list of dictionaries and spits out a yaml file based on input. Can be used to trigger rvs runs<br>
