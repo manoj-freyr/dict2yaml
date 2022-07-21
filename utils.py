@@ -42,7 +42,7 @@ def parse_line(line, params):
 	if line == '\n':
 		return
 	kv = line.split(':')
-	print(kv)
+	#print(kv)
 	k = kv[0].strip()
 	v = kv[1].strip()
 	if v.isdecimal():
@@ -61,7 +61,7 @@ def conf2dict(filename):
 		print(key + ":" + params[key])
 
 if __name__ == "__main__":
-	if len(sys.argv != 2):
+	if len(sys.argv) != 2:
 		usage()
 		sys.exit()
 	conf2dict(sys.argv[1])
