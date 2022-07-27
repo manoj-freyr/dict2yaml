@@ -1,7 +1,10 @@
 #from subprocess import Popen, PIPE
 import subprocess
 import sys
+from collections import defaultdict
 from parser import TestParser
+import asyncio
+import itertools as it
 
 def usage():
     print("""
@@ -9,6 +12,13 @@ def usage():
         """)
 
 if __name__ == "__main__":
+    asyncio.run(mainfun())
+
+async def taskgenerator(listdict,queue):
+    for lst in listdict:
+         await queue.put(lst)
+    
+async def mainfun():
     if len(sys.argv) == 1:
         usage()
         sys.exit()
@@ -45,10 +55,31 @@ if __name__ == "__main__":
             'ldc' : '8640'
         }
         ]
-    parser.parse(testcases)
+    print("ok")
+    mod_dict = defaultdict(list)
+    for item in testcases:
+        mod_dict[item['module']].append(item)
+    q = asyncio.Queue()
+    prod = asyncio.create_task(taskgenerator(mod_dict,q)
+    cons = asyncio.create_task(consumertask(module, q) for a in range(7))
+    await asyncio.gather(prod)
+    await q.join()
+    for c in cons:
+        c.cancel()
+    #parser.parse(testcases)
     print("output file: "+parser.output_file)
     f = open(parser.output_file, "w")
     rvs = sys.argv[1]
     ret = subprocess.call([rvs, '-c', str(parser.conf_file)], stdout=f)
 
 
+async def consumertask(modulename, queue):
+    while True:
+        testcases = await queue.get() #list of dicts
+        cfile, opfile = parser.parse(testcases) #ensure return cfile,opfile explicitly
+        f = open(opfile, "w")
+        proc = await asyncio.create_subprocess_exec(rvs,'-c',cfile,stdout=f)
+        ret = await proc.wait()#wait for can help in timeout
+        f.close()
+        queue.task_done()
+        return ret, opfile
