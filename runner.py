@@ -22,7 +22,6 @@ async def mainfun():
     if len(sys.argv) == 1:
         usage()
         sys.exit()
-    parser = TestParser("gst")
     testcases = [
         { 
             'name' : 'gpustress-9000-sgemm-false',
@@ -61,24 +60,26 @@ async def mainfun():
         mod_dict[item['module']].append(item)
     q = asyncio.Queue()
     prod = asyncio.create_task(taskgenerator(mod_dict,q)
-    cons = asyncio.create_task(consumertask(module, q) for a in range(7))
+    consumers =[asyncio.create_task(consumertask(module, q) for a in range(7))]
     await asyncio.gather(prod)
     await q.join()
-    for c in cons:
+    for c in consumers:
         c.cancel()
     #parser.parse(testcases)
     print("output file: "+parser.output_file)
-    f = open(parser.output_file, "w")
-    rvs = sys.argv[1]
-    ret = subprocess.call([rvs, '-c', str(parser.conf_file)], stdout=f)
+    #f = open(parser.output_file, "w")
+    #rvs = sys.argv[1]
+    #ret = subprocess.call([rvs, '-c', str(parser.conf_file)], stdout=f)
 
 
 async def consumertask(modulename, queue):
     while True:
         testcases = await queue.get() #list of dicts
-        cfile, opfile = parser.parse(testcases) #ensure return cfile,opfile explicitly
-        f = open(opfile, "w")
-        proc = await asyncio.create_subprocess_exec(rvs,'-c',cfile,stdout=f)
+        parser = TestParser("gst")
+        parser.parse(testcases) #ensure return cfile,opfile explicitly
+        print("output file: "+parser.output_file)
+        f = open(parser.output_file, "w")
+        proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,stdout=f)
         ret = await proc.wait()#wait for can help in timeout
         f.close()
         queue.task_done()
