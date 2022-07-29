@@ -50,6 +50,22 @@ async def mainfun():
             'lda' : '8640',
             'ldb' : '8640',
             'ldc' : '8640'
+        },
+        {
+            'name': 'action_1',
+            'device': 'all',
+            'module': 'iet',
+            'parallel': 'true',
+            'count': '1',
+            'duration': '50000',
+            'ramp_interval': '5000',
+            'sample_interval': '700',
+            'log_interval': '700',
+            'max_violations': '1',
+            'target_power': '180',
+            'tolerance': '0.06',
+            'matrix_size': '8640',
+            'ops_type': 'dgemm'
         }
         ]
     print("ok")
