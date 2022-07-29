@@ -11,12 +11,10 @@ def usage():
         python runner.py <location_of_rvs_binary>
         """)
 
-if __name__ == "__main__":
-    asyncio.run(mainfun())
-
 async def taskgenerator(listdict,queue):
-    for lst in listdict:
-         await queue.put(lst)
+    for key in listdict:
+         queue.put_nowait(listdict[key])
+         print("taskgenerator put a testcase",listdict[key])
     
 async def mainfun():
     if len(sys.argv) == 1:
@@ -25,7 +23,7 @@ async def mainfun():
     testcases = [
         { 
             'name' : 'gpustress-9000-sgemm-false',
-            'device' : 'all',
+            'device' : '6059',
             'module' : 'gst',
             'parallel' : 'false',
             'duration' : '10000',
@@ -40,7 +38,7 @@ async def mainfun():
         },
         { 
             'name' : 'gpustress-9000-sgemm-true',
-            'device' : 'all',
+            'device' : '6059',
             'module' : 'gst',
             'parallel' : 'true',
             'duration' : '10000',
@@ -58,29 +56,45 @@ async def mainfun():
     mod_dict = defaultdict(list)
     for item in testcases:
         mod_dict[item['module']].append(item)
+    print("size of dict is ",len(mod_dict))
     q = asyncio.Queue()
-    prod = asyncio.create_task(taskgenerator(mod_dict,q)
-    consumers =[asyncio.create_task(consumertask(module, q) for a in range(7))]
-    await asyncio.gather(prod)
+    loop = asyncio.get_event_loop()
+    
+    prod = loop.create_task(taskgenerator(mod_dict,q))
+    consumers = []
+    await prod
+    for a in range(2):
+        consumers.append(loop.create_task(consumertask(q, a)))
     await q.join()
     for c in consumers:
+        print("before cancelling consumer")
+        ret, ofile = await c
         c.cancel()
-    #parser.parse(testcases)
-    print("output file: "+parser.output_file)
-    #f = open(parser.output_file, "w")
-    #rvs = sys.argv[1]
-    #ret = subprocess.call([rvs, '-c', str(parser.conf_file)], stdout=f)
+        print("output file: "+ ofile)
+        print("result: "+ str(ret))
+    print("ALL done")
 
-
-async def consumertask(modulename, queue):
+async def consumertask(queue, idx):
     while True:
-        testcases = await queue.get() #list of dicts
-        parser = TestParser("gst")
-        parser.parse(testcases) #ensure return cfile,opfile explicitly
-        print("output file: "+parser.output_file)
-        f = open(parser.output_file, "w")
-        proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,stdout=f)
-        ret = await proc.wait()#wait for can help in timeout
-        f.close()
-        queue.task_done()
-        return ret, opfile
+        print("consumer idx", idx)
+        try:
+            #testcases = await queue.get_nowait() #list of dicts
+            testcases = queue.get_nowait() #list of dicts
+            print("got a testcase consumer ", testcases[0]['module'])
+            parser = TestParser(testcases[0]["module"])
+            parser.parse(testcases) #ensure return cfile,opfile explicitly
+            print("output file: "+parser.output_file)
+            rvs = sys.argv[1]
+            proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,'-l',parser.output_file)
+            ret = await proc.wait()#wait for can help in timeout
+            queue.task_done()
+            return ret, parser.output_file
+        except asyncio.CancelledError:
+            print("coro cancelled from caller, all assigned tasks completed")
+            return -1, ""
+        except asyncio.QueueEmpty:
+            return -1, "empty queue of tasks"
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(mainfun())

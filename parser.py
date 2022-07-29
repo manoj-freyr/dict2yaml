@@ -3,8 +3,8 @@ class TestParser:
     def __init__(self, modulename):
         time_stamp = time.time()
         self.mod_name = modulename
-        self.conf_file= "/usr/share/"+self.mod_name+str(time_stamp)+".conf"
-        self.output_file= "/usr/share/"+self.mod_name+str(time_stamp)+".txt"
+        self.conf_file= "/tmp/manoj/"+self.mod_name+str(time_stamp)+".conf"
+        self.output_file= "/tmp/manoj/"+self.mod_name+str(time_stamp)+".txt"
         try:
             self.fileobj = open(self.conf_file, 'a')
         except OSError as e:
