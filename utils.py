@@ -52,6 +52,7 @@ def parse_line(line, params):
 	else:
 		alnum_parse(k, v, params)
 
+
 def conf2dict(filename):
 	with open(filename) as f:
 		params = {}
@@ -59,6 +60,44 @@ def conf2dict(filename):
 			parse_line(line, params)
 	for key in params:
 		print(key + ":" + params[key])
+
+def get_kv(line):
+    line = line.strip('-')
+    kv = line.split(':')
+    return kv[0].strip(), kv[1].strip()
+
+def parse_configline(line, testlist, paramdict):
+    line = line.strip()
+    if line == "" or line.startswith('#') or line.startswith('actions:'):
+        return  
+    if line == '\n':
+        return  
+    if(line.startswith('-'):
+        if(len(paramdict) != 0):
+            mod = paramdict['module']
+            # handle error here if module not present
+            t = TestCase(mod)
+            t.update_dict(paramdict)
+            testlist.append(t)
+            paramdict = {}
+            k,v = get_kv(line)
+            paramdict[k] = v
+
+def parse_cfile(fname):
+    tlist = []
+    pdict = {}
+    with open(fname) as f:
+        for line in f:
+            parse_configline(line,tlist,pdict)
+    return tlist
+
+def testcase_list():
+    testlist = []
+    with open("modules.txt") as f:
+        for line in f:
+            lst = parse_cfile(line.strip())
+            testlist.extend(lst)
+    return testlist
 
 if __name__ == "__main__":
 	if len(sys.argv) != 2:
