@@ -1,7 +1,7 @@
 class TestCase:
     cnt = 0
-    def __init__(self,modname):
-        self.testDict = {}
+    def __init__(self,modname, pdict):
+        self.testDict = pdict
         self.enabled = False
         self.moduleName = modname
         TestCase.cnt += 1
@@ -29,5 +29,15 @@ class TestCase:
     
     def update_moduleid(self,modid):
         self.moduleID = modid
+
     def run(self):
         pass
+  
+    def stringify(self):
+        modstr = ""
+        for k in self.testDict:
+            modstr += k + " : " + self.testDict[k] + ","
+        return modstr
+    def __str__(self):
+        return "TestCase object with fields: " + "testID: " +str(self.testID) + " ,feature: " + self.feature + " ,moduleId: " +str(self.moduleID) + " \n and test parameters are :\n" + self.stringify()
+            

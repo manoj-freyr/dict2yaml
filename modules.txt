@@ -1,9 +1,8 @@
-gst_single.txt
-iet_single.txt
-mem.txt
-pebb_single.txt
-pqt_single.txt
-peqt_single.txt
-pesm_1.txt
-rcqt_single.txt
-
+gst_single.conf
+iet_single.conf
+mem.conf
+pebb_single.conf
+pqt_single.conf
+peqt_single.conf
+pesm_1.conf
+rcqt_single.conf
