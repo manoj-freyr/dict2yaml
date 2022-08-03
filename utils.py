@@ -116,5 +116,6 @@ if __name__ == "__main__":
   tt = testcase_list()
   print(len(tt))
   print("the list is as below")
-  print(tt)
+  for item in tt:
+    print(item)
 	
