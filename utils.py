@@ -83,8 +83,9 @@ def parse_configline(line, testlist, paramdict):
             t = testcase.TestCase(mod,paramdict)
             #print(paramdict)
             #t.update_dict(paramdict)
+            #print(t)
             testlist.append(t)
-            paramdict = {}
+            paramdict.clear()
     k,v = get_kv(line)
     paramdict[k] = v
 
@@ -97,6 +98,9 @@ def parse_cfile(fname):
     with open(fname) as f:
         for line in f:
             parse_configline(line,tlist,pdict)
+    if(len(pdict) != 0):
+        t = testcase.TestCase(pdict['module'], pdict)
+        tlist.append(t)
     return tlist
 
 def testcase_list():
@@ -117,5 +121,4 @@ if __name__ == "__main__":
   print(len(tt))
   print("the list is as below")
   for item in tt:
-    print(item)
-	
+      print(item)	

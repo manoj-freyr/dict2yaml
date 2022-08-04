@@ -1,14 +1,15 @@
+import copy
 class TestCase:
     cnt = 0
     def __init__(self,modname, pdict):
-        self.testDict = pdict
+        self.testDict = copy.deepcopy(pdict)
         self.enabled = False
         self.moduleName = modname
         TestCase.cnt += 1
         self.testID = TestCase.cnt
         self.feature = "Default"
         self.moduleID = 0
-
+        self.modstr = ""
     def update_dict(self,tdict):
         self.testDict = tdict
 
@@ -34,10 +35,10 @@ class TestCase:
         pass
   
     def stringify(self):
-        modstr = ""
         for k in self.testDict:
-            modstr += k + " : " + self.testDict[k] + ","
-        return modstr
+            self.modstr += k + " : " + self.testDict[k] + ","
+        
     def __str__(self):
-        return "TestCase object with fields: " + "testID: " +str(self.testID) + " ,feature: " + self.feature + " ,moduleId: " +str(self.moduleID) + " \n and test parameters are :\n" + self.stringify()
+        self.stringify()
+        return "TestCase object with fields: " + "testID: " +str(self.testID) + " ,feature: " + self.feature + " ,moduleId: " +str(self.moduleID) + " \n and test parameters are :\n" + self.modstr
             
