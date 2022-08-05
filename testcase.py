@@ -1,15 +1,17 @@
 import copy
 class TestCase:
     cnt = 0
-    def __init__(self,modname, pdict):
+    def __init__(self,modname, pdict, fname):
         self.testDict = copy.deepcopy(pdict)
         self.enabled = False
         self.moduleName = modname
-        TestCase.cnt += 1
-        self.testID = TestCase.cnt
-        self.feature = "Default"
+        self.feature = fname
         self.moduleID = 0
         self.modstr = ""
+        TestCase.cnt += 1
+        self.testID = TestCase.cnt
+
+
     def update_dict(self,tdict):
         self.testDict = tdict
 
@@ -40,5 +42,5 @@ class TestCase:
         
     def __str__(self):
         self.stringify()
-        return "TestCase object with fields: " + "testID: " +str(self.testID) + " ,feature: " + self.feature + " ,moduleId: " +str(self.moduleID) + " \n and test parameters are :\n" + self.modstr
+        return "TestCase object with fields: " + "testID: " +str(self.testID) + " ,feature: " + self.feature + " ,moduleId: " +str(self.moduleID) + ", Test Name : " + self.testDict["name"] + " \n and test parameters are :\n" + self.modstr
             

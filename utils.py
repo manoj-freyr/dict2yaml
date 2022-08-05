@@ -2,7 +2,8 @@ import re
 import sys
 import testcase
 import os.path 
-rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
+#rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
+rvsloc = "/home/taccuser/PRs/RVS/ROCmValidationSuite/rvs/conf/"
 def usage():
 	print("""
 		python utils.py <conf filename>
@@ -80,7 +81,7 @@ def parse_configline(line, testlist, paramdict):
         if(len(paramdict) != 0):
             mod = paramdict['module']
             # handle error here if module not present
-            t = testcase.TestCase(mod,paramdict)
+            t = testcase.TestCase(mod,paramdict,"DefaultFeature")
             #print(paramdict)
             #t.update_dict(paramdict)
             #print(t)
@@ -99,7 +100,7 @@ def parse_cfile(fname):
         for line in f:
             parse_configline(line,tlist,pdict)
     if(len(pdict) != 0):
-        t = testcase.TestCase(pdict['module'], pdict)
+        t = testcase.TestCase(pdict['module'], pdict,"DefaultFeature")
         tlist.append(t)
     return tlist
 
