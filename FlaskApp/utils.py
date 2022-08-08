@@ -3,6 +3,8 @@ import sys
 import testcase
 import os.path
 import json
+from testcase import TestCaseJsonEncoder
+
 
 JSON_FILE_FOR_DUMPING_OBJS="ObjValsDumps.txt"
 #rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
@@ -127,8 +129,11 @@ if __name__ == "__main__":
   fd=open(JSON_FILE_FOR_DUMPING_OBJS,'w')
   for item in tt:
       print(item)
-      objs=json.dumps(item.__dict__)
-      json.dump(objs,fd)
+      #objs=json.dumps(item)
+      #json.dump(objs,fd)
+      jobj=json.dumps(item,cls=TestCaseJsonEncoder)
+      fd.write(jobj+'\n')
+      
 
   fd.close()
 
