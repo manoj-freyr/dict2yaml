@@ -1,7 +1,10 @@
 import re
 import sys
 import testcase
-import os.path 
+import os.path
+import json
+
+JSON_FILE_FOR_DUMPING_OBJS="ObjValsDumps.txt"
 #rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
 rvsloc = "/home/taccuser/PRs/RVS/ROCmValidationSuite/rvs/conf/"
 def usage():
@@ -121,5 +124,13 @@ if __name__ == "__main__":
   tt = testcase_list()
   print(len(tt))
   print("the list is as below")
+  fd=open(JSON_FILE_FOR_DUMPING_OBJS,'w')
   for item in tt:
-      print(item)	
+      print(item)
+      objs=json.dumps(item.__dict__)
+      json.dump(objs,fd)
+
+  fd.close()
+
+
+
