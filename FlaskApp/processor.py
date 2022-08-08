@@ -1,4 +1,4 @@
-from ... utils  import testcase_list 
+from testcase import TestCase
 
 
 class SelectedTest:
@@ -20,7 +20,7 @@ class SelectedTest:
 
     def GetFeatureID(self):
         return self.fid
-    
+
     def GetStatus(self):
         return self.status
 
@@ -46,7 +46,7 @@ class Controller:
 
         #This Masterlist is obtained from utils.py
         self.Masterlist=mlist
-        
+
         #A list of strigs to populate the features
         self.FeatureNames=[]
 
@@ -61,13 +61,13 @@ class Controller:
 
         #This is a list of Selected Tests
         self.Selectedlist=[]
-        
+
         #if the list starts increasing the then 'in' functionality becomes slow
         #https://stackoverflow.com/a/40963434/672480  ;  we should be using sets in that case
         for item in self.Masterlist:
             #caluculate the index of this item in the parent list
             idx=self.Masterlist.index(item)
-            
+
             #If this feature does not exists in the feature list then only add it
             if item.feature not in self.FeatureNames:
                 self.FeatureNames.append(item.feature)
@@ -75,12 +75,18 @@ class Controller:
             #same with module ID
             if item.moduleID not in self.ModuleNames:
                 self.ModuleNames.append(item.moduleID)
-        
+
             #add this idx of the parent list to this dictionary
             self.ModuleDict[item.moduleID].append(idx)
             self.FeatureDict[item.feature].append(idx)
             print(f"Initialized Object with Master list :  {self.Masterlist}")
 
+
+    def GetFeatureNames(self):
+        return self.FeatureNames
+
+    def GetModuleNames(self):
+        return self.ModuleNames
 
     #This list populates the 2 part
     def GetWholeTestListBasedOnModuleOrFeature(self,Moduleorfeature, name):
@@ -122,7 +128,7 @@ class Controller:
         for obj in selectedlist:
             self.Masterlist[obj.GetMasteridx()].enable()
 
-    
+
 
 
 '''# below APIs will not be good hence we have discareded these afert discussion
