@@ -1,4 +1,8 @@
-from testcase import TestCase
+from collections import defaultdict
+import sys
+
+def dprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 class SelectedTest:
@@ -54,10 +58,10 @@ class Controller:
         self.ModuleNames=[]
 
         #A dictionary of string:IndexList[] which points to the test objects of Masterlist
-        self.ModuleDict={}
+        self.ModuleDict=defaultdict(list)
 
         #A dictionary of string:IndexList[] which points to the test objects of Masterlist
-        self.FeatureDict={}
+        self.FeatureDict=defaultdict(list)
 
         #This is a list of Selected Tests
         self.Selectedlist=[]
@@ -67,6 +71,7 @@ class Controller:
         for item in self.Masterlist:
             #caluculate the index of this item in the parent list
             idx=self.Masterlist.index(item)
+            dprint(f" processing for index {idx} of the testcaselist ")
 
             #If this feature does not exists in the feature list then only add it
             if item.feature not in self.FeatureNames:

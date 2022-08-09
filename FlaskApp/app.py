@@ -15,33 +15,28 @@ def eprint(*args, **kwargs):
 
 def BeforeLaunch():
     eprint(f" This is starting of the function : BeforeLaunch()  ")
+    ListFromfile=[]
     fd=open(JSON_FILE_FOR_DUMPING_OBJS,'r')
     file_in=fd.readlines()
     for line in file_in:
         line.rstrip()
         tobj=json.loads(line)
-        eprint(tobj)
+        #eprint(tobj)
         tele=TestCase(tobj[2],tobj[5],tobj[3],tobj[0],tobj[4],tobj[1])
-        eprint(tele)
+        #eprint(tele)
+        ListFromfile.append(tele)
          
-            
-
-    #fd=open(JSON_FILE_FOR_DUMPING_OBJS,'r')
-    #jobj=json.dumps(item,cls=TestCaseJsonEncoder)
-    
-    #ListFromfile= json.loads(fd)
-    #fd.close()
-    #eprint(f"Read : {len(ListFromfile)} Objs")
+    eprint(f"Read : {len(ListFromfile)} Objs")
 
     #for item in ListFromfile:
     #    eprint(item)
 
 
-    #AppController=Controller(testcase_list())
+    AppController=Controller(ListFromfile)
 
-    #eprint(f" The module names are :  {AppController.GetModuleNames() }")
+    eprint(f" The module names are :  {AppController.GetModuleNames() }")
 
-    #eprint(f" The module names are :  {AppController.GetFeatureNames() }")
+    eprint(f" The module names are :  {AppController.GetFeatureNames() }")
 
 
 
