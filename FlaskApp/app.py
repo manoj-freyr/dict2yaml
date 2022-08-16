@@ -34,12 +34,12 @@ def GetMasterListFromFile():
         line.rstrip()
         tobj=json.loads(line)
         #eprint(tobj)
-        
+
         tele=TestCase(tobj[2],tobj[5],tobj[3],tobj[0],tobj[4],tobj[1])  # (modname, pdict, fname, id=-1,mid=0,enb=False)
-        
+
         #eprint(tele)
         ListFromfile.append(tele)
-         
+
     #eprint(f"Read : {len(ListFromfile)} Objs")
 
     #for item in ListFromfile:
@@ -69,8 +69,8 @@ AppController=Controller(Mlist)
 #--------------------------------------------------------------------
 # Keys mapped to columns as Header row
 # Values are mapped to data for each cell
-# table is assumed to be a List of dictionaries. 
-tbl_dict = [ 
+# table is assumed to be a List of dictionaries.
+tbl_dict = [
          {'test_id':1, 'module_id':'gst', 'test_name':"test1", 'test_status':"Pass ",'test_log':"This log file is clickable "},
          {'test_id':2, 'module_id':'gst', 'test_name':"test1", 'test_status':"Fail",'test_log':"output.txt"},
          {'test_id':3, 'module_id':'gst', 'test_name':"test1", 'test_status':"Running..",'test_log':"testlog.txt"},
@@ -118,7 +118,7 @@ def add_remove_test():
         module_id=request.form.get('mod-list')
         mod_selected = module_id
         print ( "module-id = ", module_id)
-        
+
         """
         if module_id == 'mod1':
             # get the test list for the selected module/feature
@@ -142,7 +142,7 @@ def add_remove_test():
     return render_template('add-remove-test.html', modules=modules, mod_selected=mod_selected, tests=tests, selected_tests=selected_tests)
 
 #--------------------------------------------------------------------
-# RVT Add Test 
+# RVT Add Test
 #--------------------------------------------------------------------
 @app.route('/addtest', methods=['GET', 'POST'])
 def addtest():
@@ -165,7 +165,7 @@ def addtest():
         else:
             modifyData.append(item[0])
             removethis=True
-    
+
 
     #Test remove API
     AppController.RemoveFromSelectedList(removelist)
@@ -175,7 +175,7 @@ def addtest():
         params=AppController.GetParamsOfSelectedItem(item)
         params["name"]="modified_"+params["name"]
         AppController.SetParamsOfSelectedItem(item,params)
-    
+
 
     #Finally Check if All the Selected list is fine or not
     SelectedListNow=AppController.GetSelectedTestList()
@@ -190,7 +190,7 @@ def addtest():
 
 
 
-        
+
 
 
 

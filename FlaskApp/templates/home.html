@@ -3,7 +3,7 @@
 {% block content %}
 
     <div class="d-grid gap-2 col-4 ">
-       
+
         <input type="submit" class="btn btn-secondary btn-lg" value="Add Test" {{btn_disable_add}} onclick="window.location.href='{{ url_for('add_remove_test') }}';">
         <input type="submit" class="btn btn-secondary btn-lg" value="Run" {{btn_disable_run}} >
     </div>
@@ -20,7 +20,7 @@
                 <th>Test Status</th>
                 <th>Test Log</th>
             </tr>
-        
+
             {% for row in tbl_dict %}
                 <tr>
                     <td>{{row["test_id"]}}</td>
@@ -30,10 +30,10 @@
                     <td>
                         <a href="">{{row["test_log"]}}</a>
                     </td>
-                
-                </tr> 
+
+                </tr>
             {% endfor %}
         </table>
     </div>
-    
+
 {% endblock %}
