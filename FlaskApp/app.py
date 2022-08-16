@@ -8,6 +8,9 @@ import json
 from testcase import TestCase
 #from types import SimpleNamespace
 
+RUNNIN_IN_WINDOWS=True
+
+
 app=Flask(__name__)
 
 #####################################################################
@@ -17,11 +20,15 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
-def BeforeLaunch():
-    eprint(f" This is starting of the function : BeforeLaunch()  ")
+def GetMasterListFromRVS():
+    ListFromRVS=testcase_list()
+    return ListFromRVS
+
+def GetMasterListFromFile():
+    eprint(f" This is starting of the function : GetMasterListFromFile()  ")
     ListFromfile=[]
-    #fd=open(JSON_FILE_FOR_DUMPING_OBJS,'r')
-    fd=open("C:\work\MLSE-SDT\RVS-Enhancement\dict2yaml\FlaskApp\ObjValsDumps.txt", 'r')
+    fd=open(JSON_FILE_FOR_DUMPING_OBJS,'r')
+    #fd=open("C:\work\MLSE-SDT\RVS-Enhancement\dict2yaml\FlaskApp\ObjValsDumps.txt", 'r')
     file_in=fd.readlines()
     for line in file_in:
         line.rstrip()
@@ -38,17 +45,20 @@ def BeforeLaunch():
     #for item in ListFromfile:
     #    eprint(item)
 
-
     #AppController=Controller(ListFromfile)
-
     #eprint(f" The module names are :  {AppController.GetModuleNames() }")
-
     #eprint(f" The Feature names are :  {AppController.GetFeatureNames() }")
-
     return ListFromfile
 
-mlist = BeforeLaunch()
-AppController=Controller(mlist)
+#App Start
+Mlist=[] #Master Tests List
+if RUNNIN_IN_WINDOWS:
+    Mlist = GetMasterListFromFile()
+else:
+    Mlist = GetMasterListFromRVS()
+
+#Create Controller now
+AppController=Controller(Mlist)
 
 #####################################################################
 # View Functions
@@ -121,11 +131,11 @@ def add_remove_test():
         """
         # get the list of testcases for the selected module/feature
         tests = AppController.GetWholeTestListBasedOnModuleOrFeature(True, module_id)
+        #the tests list obtained above is of the format [[]] (list of list) of the type [[idx,testname]]
         print("tests [] = ", tests)
 
         ## get the selected tests  and update it to right list as selected
         test_list = request.form.getlist('test-list')
-
 
         print( "test-list selected = ", test_list)
         selected_tests = test_list
@@ -139,6 +149,50 @@ def addtest():
     print("addtest() Post req = ", request.form)
     print("addtest() tests to be added = ", request.form.getlist('test-list'))
     test_tobe_added = request.form.getlist('test-list')
+    SelectedDisplayList=AppController.AddToSelectedList(test_tobe_added)
+
+    #this is just for testing each API here
+    print(f"SelectedDisplayList  = {SelectedDisplayList} ")
+
+    #letsTest Remove as well
+    removethis=True
+    removelist=[]
+    modifyData=[]
+    for item in SelectedDisplayList:
+        if removethis:
+            removelist.append(item[0])
+            removethis=False
+        else:
+            modifyData.append(item[0])
+            removethis=True
+    
+
+    #Test remove API
+    AppController.RemoveFromSelectedList(removelist)
+
+    #Test Modify Data API
+    for item in modifyData:
+        params=AppController.GetParamsOfSelectedItem(item)
+        params["name"]="modified_"+params["name"]
+        AppController.SetParamsOfSelectedItem(item,params)
+    
+
+    #Finally Check if All the Selected list is fine or not
+    SelectedListNow=AppController.GetSelectedTestList()
+
+    counter=1
+    for item in SelectedListNow:
+        print(f"This is the item number {counter}, The data is as follows ")
+        item.PrintThisItem()
+        counter += 1
+
+
+
+
+
+        
+
+
 
     # Add selected tests in to the active test list
     # AppController.addTest(test_tobe_added)

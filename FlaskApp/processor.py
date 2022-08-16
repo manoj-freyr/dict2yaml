@@ -1,22 +1,27 @@
 from collections import defaultdict
 import sys
+import copy
 
 def dprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 class SelectedTest:
+    COUNTERIDX = 0
     def __init__(self,masteridx, Masterlist):
-        self.masterid=masteridx
-        self.mid=Masterlist[self.masterid].moduleID
-        self.fid=Masterlist[self.masterid].feature
-        self.testID=Masterlist[masteridx].testID
-        self.testname=Masterlist[masteridx].testDict["name"]
+        SelectedTest.COUNTERIDX += 1
+        self.IDx='S_'+ str(SelectedTest.COUNTERIDX)
+        self.mid=Masterlist[int(masteridx)].moduleID
+        self.fid=Masterlist[int(masteridx)].feature
+        self.Mname=Masterlist[int(masteridx)].moduleName
+        self.Fname=Masterlist[int(masteridx)].feature
+        self.TestParams = copy.deepcopy(Masterlist[int(masteridx)].testDict)
+        #self.testname=self.TestParams["name"]
         self.status="Not Started"
         self.Result="Unknown"
-        self.LogFile = ""
+        self.LogFile="NA"
 
-    def GetMasteridx(self):
-        return self.masterid
+    def GetTestidx(self):
+        return self.IDx
 
     def GetModuleID(self):
         return self.mid
@@ -41,6 +46,24 @@ class SelectedTest:
 
     def SetLogFile(self,logfile):
         self.LogFile=logfile
+
+    def GetModuleName(self):
+        return self.Mname
+
+    def GetFeatureName(self):
+        return self.Fname
+
+    def GetTestParams(self):
+        return self.TestParams
+    
+    def SetTestParams(self,ParamsDict):
+        self.TestParams = copy.deepcopy(ParamsDict)
+    
+    def PrintThisItem(self):
+        dprint(f"Idx = {self.IDx}, MID={self.mid} & name = {self.Mname}, FID={self.fid} & name = {self.Fname}")
+        dprint(f"Status = {self.status}, Result={self.Result}, LogFile={self.LogFile}")
+        dprint(f"Params of this item : {self.TestParams}")
+        #self.testname=self.TestParams["name"]
 
 
 class Controller:
@@ -87,13 +110,16 @@ class Controller:
            # print(f"Initialized Object with Master list :  {self.Masterlist}")
 
 
+    def GetSelectedTestList(self):
+        return self.Selectedlist
+
     def GetFeatureNames(self):
         return self.FeatureNames
 
     def GetModuleNames(self):
         return self.ModuleNames
 
-    #This list populates the 2 part
+    #This list populates the 2 part (#Box 1)
     def GetWholeTestListBasedOnModuleOrFeature(self,Moduleorfeature, name):
         tmplist=[]
         returlist=[]
@@ -104,28 +130,46 @@ class Controller:
             tmplist=self.FeatureDict[name]
 
         for idx in tmplist:
-            returlist.append({self.Masterlist[idx].testDict["name"],idx})
+            returlist.append([idx,self.Masterlist[idx].testDict["name"]])
 
         return returlist
 
-
+    #API for adding test to selected list
     def AddToSelectedList(self,listofmasterids):
+        DisplayList=[]
         for idx in listofmasterids:
+            #Each test would be new Selected test, hence just create one
             selectedobj=SelectedTest(idx,self.Masterlist)
             self.Selectedlist.append(selectedobj)
+            DisplayList.append([selectedobj.GetTestidx(),selectedobj.GetTestParams()["name"]])
+        
+        return DisplayList
 
-    def RemoveFromSelectedList(self,listofmasterids):
-        for idx in listofmasterids:
+
+    #API for removing a test from the selected list
+    def RemoveFromSelectedList(self,ListOfIDXOfSelectedTest):
+        for idx in ListOfIDXOfSelectedTest:
             for obj in self.Selectedlist:
-                if obj.GetMasteridx() == idx:
+                if obj.GetTestidx() == idx:
+                    dprint(f" removing : {idx}")
                     self.Selectedlist.remove(obj)
                     break
 
-    def GetDictOfSelectedItem(self,idx):
-        return self.Masterlist[idx].testDict
+    #API for getting the test params of a selected test (#box : 3)
+    def GetParamsOfSelectedItem(self,idx):
+        dprint(f" GettingDataOf : {idx}")
+        for obj in self.Selectedlist:
+            if obj.GetTestidx() == idx:
+                dprint(f" ObjFound for : {idx}")
+                return obj.GetTestParams()
 
-    def SetDictOfSelectedItem(self,idx,dict):
-        self.Masterlist[idx].update_dict(dict)
+    #API for updating the modified params from the User (#box :3 updated data)
+    def SetParamsOfSelectedItem(self,idx,dict):
+        dprint(f" SettingDataOf : {idx}")
+        for obj in self.Selectedlist:
+            if obj.GetTestidx() == idx:
+                dprint(f" ObjFound for : {idx}")
+                obj.SetTestParams(dict)
 
 
     #I want to use this in observer faishon. Need to figure out how to do it in Python

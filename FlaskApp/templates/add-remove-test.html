@@ -24,7 +24,7 @@
             <label class="form-label" for="test-list">Select the test to add: </label>
             <select class="form-select" size="10" name="test-list" multiple id="test-list" >
                 {% for test in tests %}
-                    <option value={{test.idx}}>{{ test["idx"] }}</option>
+                    <option value={{test[0]}}>{{ test[0] }}</option>
                 {% endfor %}
             </select> 
             <br>
