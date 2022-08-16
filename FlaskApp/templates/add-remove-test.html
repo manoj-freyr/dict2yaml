@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form class="row g-3" action="{{ url_for('add_remove_test') }}" method="POST">
+        <!-- Dropdown selection for module -->
+        <div class="col-md-6">
+            <label class="form-label" for="mod-list">Select the Module to validate: </label>
+            <select class="form-select" name="mod-list" id="mod-list" onchange="this.form.submit()">
+                <option value="0">{{mod_selected}}</option>
+                {% for mod in modules %}
+                    <option value={{mod}}>{{ mod }}</option>
+                {% endfor %}
+            </select> 
+        </div>
+
+        <!-- TODO: Just leave the right half of this line OR we can have selection filter for Features -->
+        <div class="col-md-6">
+        </div>
+
+        <!-- Multiple select box to list the tests for the above selected Module / Feature -->
+        <!-- select the tests and click add to build the active test list -->
+        <div class="col-md-6">
+            <label class="form-label" for="test-list">Select the test to add: </label>
+            <select class="form-select" size="10" name="test-list" multiple id="test-list" >
+                {% for test in tests %}
+                    <option value={{test.idx}}>{{ test["idx"] }}</option>
+                {% endfor %}
+            </select> 
+            <br>
+            <button type="submit" class="btn btn-primary btn-lg" formaction="{{ url_for('addtest')}}">Add</button>
+        </div>
+        <div class="col-md-6">
+<!--
+            <label class="form-label" for="selected-list">Selected tests: </label>
+            <select class="form-select" size="10" name="selected-list"  id="selected-list" >
+                {% for stest in selected_tests %}
+                    <option value={{stest}}>{{ stest }}</option>
+                {% endfor %}
+            </select> 
+            <br>
+            <button type="submit" class="btn btn-primary btn-lg">Modify Parameters</button>
+            <button type="submit" class="btn btn-primary btn-lg">Remove</button>
+            <button type="submit" class="btn btn-primary btn-lg">Back</button>
+ -->
+
+            <div class="table-responsive">
+
+                <!-- Place table of active list of tests to be executed and its running status -->
+                <table class="table table-wrap table-striped table-bordered">
+                    <tr>
+                        <th>Test ID</th>
+                        <th>Selected Test Name</th>
+                        <th>Action</th>
+                    </tr>
+                
+                    {% for test in selected_tests %}
+                        <tr>
+                            <td>{{test["test_id"]}}</td>
+                            <td>{{test["test_name"]}}</td>
+                            <td>
+                                <a href="/removetest/{{test["test_id"]}}">Remove</a>
+                                <br>
+                                <a href="/modifytest/{{test["test_id"]}}">Modify</a>
+                            </td>
+                        
+                        </tr> 
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
