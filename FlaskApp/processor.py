@@ -4,7 +4,6 @@ import sys
 def dprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-
 class SelectedTest:
     def __init__(self,masteridx, Masterlist):
         self.masterid=masteridx
@@ -71,20 +70,21 @@ class Controller:
         for item in self.Masterlist:
             #caluculate the index of this item in the parent list
             idx=self.Masterlist.index(item)
-            dprint(f" processing for index {idx} of the testcaselist ")
+            #dprint(f" processing for index {idx} of the testcaselist ")
 
             #If this feature does not exists in the feature list then only add it
             if item.feature not in self.FeatureNames:
                 self.FeatureNames.append(item.feature)
 
             #same with module ID
-            if item.moduleID not in self.ModuleNames:
-                self.ModuleNames.append(item.moduleID)
+            if item.moduleName not in self.ModuleNames:
+                self.ModuleNames.append(item.moduleName)
+                #print(f"ModuleNames=  {self.ModuleNames}")
 
             #add this idx of the parent list to this dictionary
-            self.ModuleDict[item.moduleID].append(idx)
+            self.ModuleDict[item.moduleName].append(idx)
             self.FeatureDict[item.feature].append(idx)
-            print(f"Initialized Object with Master list :  {self.Masterlist}")
+           # print(f"Initialized Object with Master list :  {self.Masterlist}")
 
 
     def GetFeatureNames(self):
