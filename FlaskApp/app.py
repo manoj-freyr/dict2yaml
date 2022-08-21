@@ -70,27 +70,25 @@ AppController=Controller(Mlist)
 # Keys mapped to columns as Header row
 # Values are mapped to data for each cell
 # table is assumed to be a List of dictionaries.
-tbl_dict = [
-         {'test_id':1, 'module_id':'gst', 'test_name':"test1", 'test_status':"Pass ",'test_log':"This log file is clickable "},
-         {'test_id':2, 'module_id':'gst', 'test_name':"test1", 'test_status':"Fail",'test_log':"output.txt"},
-         {'test_id':3, 'module_id':'gst', 'test_name':"test1", 'test_status':"Running..",'test_log':"testlog.txt"},
-         {'test_id':4, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':5, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':6, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':7, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':8, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':9, 'module_id':'gst', 'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-         {'test_id':10,'module_id':'gst',  'test_name':"test1", 'test_status':"",'test_log':"testlog.txt"},
-        ]
-
-btn_disable_add = ''
-btn_disable_run = ''
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
 
-    btn_disable_add = ''
-    btn_disable_run = 'disabled'
+    tbl_dict=[]
+    selected_tests = AppController.GetSelectedTestList()
+
+    for test in selected_tests:
+        tbl_dict.append({'test_id':test.GetTestidx(), 'module_id':test.GetModuleName(),
+                         'test_name':test.GetTestParams()["name"], 'test_status':test.GetStatus(),
+                         'test_log':test.GetLogFile()})
+
+    if len(selected_tests) == 0:
+        btn_disable_add = ''
+        btn_disable_run = 'disabled'
+    else:
+        btn_disable_add = ''
+        btn_disable_run = ''
+
     return render_template('home.html', tbl_dict=tbl_dict,
                             btn_disable_add = btn_disable_add,
                             btn_disable_run = btn_disable_run)
@@ -101,44 +99,38 @@ def home():
 #--------------------------------------------------------------------
 
 
-mod_selected = "Select the module"
+# mod_selected = "Select the module"
 @app.route('/add-remove-test', methods=['GET', 'POST'])
 def add_remove_test():
     print ("request = ", request)
     print ("request.args = ", request.args)
     print ("request.form = ", request.form)
 
-    tests =[]
-    #modules = [ "mod1", "mod2", "mod3", "mod4"]
-    modules = AppController.GetModuleNames()
 
-    selected_tests = []
-    mod_selected = "Select the module"
+    modules = AppController.GetModuleNames()
+    selected_tests = AppController.GetSelectedTestListForDisplay()
+
     if request.method == 'POST':
         module_id=request.form.get('mod-list')
         mod_selected = module_id
         print ( "module-id = ", module_id)
 
-        """
-        if module_id == 'mod1':
-            # get the test list for the selected module/feature
-            tests = [ "test11", "test12", "test13", "test14"]
-        elif module_id == 'mod2':
-            # get the test list for the selected module/feature
-            tests = [ "test21", "test22", "test23", "test24"]
-        else:
-            tests = [ "test31", "test32", "test33", "test34"]
-        """
         # get the list of testcases for the selected module/feature
         tests = AppController.GetWholeTestListBasedOnModuleOrFeature(True, module_id)
         #the tests list obtained above is of the format [[]] (list of list) of the type [[idx,testname]]
         print("tests [] = ", tests)
 
-        ## get the selected tests  and update it to right list as selected
-        test_list = request.form.getlist('test-list')
+        # get the selected tests  and update it to right list as selected
+        test_tobe_added = request.form.getlist('test-list')
+        print( "test-list selected = ", test_tobe_added)
+        if test_tobe_added != "":
+            # add the user selected test in to SelectedList and update the selected test list display
+            selected_tests = AppController.AddToSelectedList(test_tobe_added)
 
-        print( "test-list selected = ", test_list)
-        selected_tests = test_list
+    else:
+        mod_selected = "Select the module"
+        tests =[]
+
     return render_template('add-remove-test.html', modules=modules, mod_selected=mod_selected, tests=tests, selected_tests=selected_tests)
 
 #--------------------------------------------------------------------
@@ -148,55 +140,12 @@ def add_remove_test():
 def addtest():
     print("addtest() Post req = ", request.form)
     print("addtest() tests to be added = ", request.form.getlist('test-list'))
-    test_tobe_added = request.form.getlist('test-list')
-    SelectedDisplayList=AppController.AddToSelectedList(test_tobe_added)
 
-    #this is just for testing each API here
-    print(f"SelectedDisplayList  = {SelectedDisplayList} ")
+    # get the selected tests  and update it to right list as selected
+    # test_tobe_added = request.form.getlist('test-list')
+    # print( "test-list selected = ", test_tobe_added)
 
-    #letsTest Remove as well
-    removethis=True
-    removelist=[]
-    modifyData=[]
-    for item in SelectedDisplayList:
-        if removethis:
-            removelist.append(item[0])
-            removethis=False
-        else:
-            modifyData.append(item[0])
-            removethis=True
-
-
-    #Test remove API
-    AppController.RemoveFromSelectedList(removelist)
-
-    #Test Modify Data API
-    for item in modifyData:
-        params=AppController.GetParamsOfSelectedItem(item)
-        params["name"]="modified_"+params["name"]
-        AppController.SetParamsOfSelectedItem(item,params)
-
-
-    #Finally Check if All the Selected list is fine or not
-    SelectedListNow=AppController.GetSelectedTestList()
-
-    counter=1
-    for item in SelectedListNow:
-        print(f"This is the item number {counter}, The data is as follows ")
-        item.PrintThisItem()
-        counter += 1
-
-
-
-
-
-
-
-
-
-    # Add selected tests in to the active test list
-    # AppController.addTest(test_tobe_added)
-
+    # AppController.AddToSelectedList(test_tobe_added)
 
     return redirect('/add-remove-test')
 
@@ -209,7 +158,7 @@ def removetest(test_id):
     print("Test id to be removed from selected test = ", test_id)
 
     # remove selected tests in to the active test list
-    # AppController.removeTest(test_id)
+    AppController.RemoveFromSelectedList([test_id])
 
     return redirect('/add-remove-test')
 #--------------------------------------------------------------------
@@ -218,15 +167,28 @@ def removetest(test_id):
 @app.route('/modifytest/<test_id>', methods=['GET', 'POST'])
 def modifytest(test_id):
     print("Post req = ", request.form)
-    print("Test id to be modified from selected test = ", test_id)
 
-    # Gather the updated parameter values and call the API if there is update in the parameter values.
-    # params
+    if request.method == 'POST':
+        # Gather the updated parameter values and call the API if there is change in the parameter values.
+        newparams = request.form.to_dict()
+        print ("new params = ", newparams)
+        oldparams = AppController.GetParamsOfSelectedItem(test_id)
+        print ("old params = ", oldparams)
 
-    # update/modify the params of the selected test_id
-    # AppController.modifyTest(test_id)
+        if newparams != oldparams:
+            # update/modify the params of the selected test_id
+            AppController.SetParamsOfSelectedItem(test_id, newparams)
 
-    return redirect('/add-remove-test')
+        return redirect('/add-remove-test')
+    else:
+        print("Test id to be modified from selected test = ", test_id)
+        # update/modify the params of the selected test_id
+        params = AppController.GetParamsOfSelectedItem(test_id)
+        # params_type = AppController.GetParamsTypeOfSelectedItem(test_id)
+
+        print("params = ", params)
+        # return redirect('/add-remove-test')
+        return render_template('modify-test.html', test_id=test_id, params=params)
 
 
 #####################################################################

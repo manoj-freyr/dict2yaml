@@ -3,9 +3,20 @@
 {% block content %}
 
     <!--  create a form group of labels and input box for each parameter for the selected test. -->
-
-
-    <!-- submit the form for updated parameters -->
+    <form class="row g-3" action="{{ url_for('modifytest', test_id=test_id) }}" method="POST">
+        <!-- Dropdown selection for module -->
+        <div class="col-md-6">
+            {% for key, value in params.items() %}
+                <div class="input-group mb-3">
+                    <span class="input-group-text"  width="50%">{{key}}</span>
+                    <input type="text" class="form-control" name="{{key}}" value="{{value}}">
+                </div>
+            {% endfor %}
+            <div class="input-group mb-3">
+                <input type="submit" class="btn btn-primary btn-lg mb-3" align="right-aligned" value="Update">
+            </div>
+        </div>
+    </form>
 
 
 {% endblock %}

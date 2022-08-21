@@ -7,7 +7,7 @@
         <div class="col-md-6">
             <label class="form-label" for="mod-list">Select the Module to validate: </label>
             <select class="form-select" name="mod-list" id="mod-list" onchange="this.form.submit()">
-                <option value="0">{{mod_selected}}</option>
+                <option value={{mod_selected}}>{{mod_selected}}</option>
                 {% for mod in modules %}
                     <option value={{mod}}>{{ mod }}</option>
                 {% endfor %}
@@ -24,11 +24,14 @@
             <label class="form-label" for="test-list">Select the test to add: </label>
             <select class="form-select" size="10" name="test-list" multiple id="test-list" >
                 {% for test in tests %}
-                    <option value={{test[0]}}>{{ test[0] }}</option>
+                    <option value={{test[0]}}>{{ test[1] }}</option>
                 {% endfor %}
             </select>
             <br>
-            <button type="submit" class="btn btn-primary btn-lg" formaction="{{ url_for('addtest')}}">Add</button>
+            <!-- <button type="submit" class="btn btn-primary btn-lg" formaction="{{ url_for('addtest')}}">Add</button> -->
+            <button type="submit" class="btn btn-primary btn-lg">Add</button>
+            <button type="submit" class="btn btn-primary btn-lg" formaction="{{ url_for('home')}}">Back</button>
+
         </div>
         <div class="col-md-6">
 <!--
@@ -43,9 +46,18 @@
             <button type="submit" class="btn btn-primary btn-lg">Remove</button>
             <button type="submit" class="btn btn-primary btn-lg">Back</button>
  -->
-
+            <br>
             <div class="table-responsive">
 
+                <style>
+                    .table-wrap {
+                    display:grid;
+                    max-height: 300px;
+                    max-width:max-content;
+                    overflow: auto;
+                    }
+
+                </style>
                 <!-- Place table of active list of tests to be executed and its running status -->
                 <table class="table table-wrap table-striped table-bordered">
                     <tr>
@@ -56,12 +68,11 @@
 
                     {% for test in selected_tests %}
                         <tr>
-                            <td>{{test["test_id"]}}</td>
-                            <td>{{test["test_name"]}}</td>
+                            <td>{{test[0]}}</td>
+                            <td>{{test[1]}}</td>
                             <td>
-                                <a href="/removetest/{{test["test_id"]}}">Remove</a>
-                                <br>
-                                <a href="/modifytest/{{test["test_id"]}}">Modify</a>
+                                <a href="/removetest/{{test[0]}}">[Remove]</a>
+                                <a href="/modifytest/{{test[0]}}">[Modify]</a>
                             </td>
 
                         </tr>
