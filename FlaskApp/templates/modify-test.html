@@ -6,14 +6,19 @@
     <form class="row g-3" action="{{ url_for('modifytest', test_id=test_id) }}" method="POST">
         <!-- Dropdown selection for module -->
         <div class="col-md-6">
+            <div class="input-group mb-3">
+                <h3> Parameters Update for Test ID: {{test_id}}</h3>
+            </div>
+
             {% for key, value in params.items() %}
                 <div class="input-group mb-3">
-                    <span class="input-group-text"  width="50%">{{key}}</span>
+                    <span class="input-group-text" >{{key}}</span>
                     <input type="text" class="form-control" name="{{key}}" value="{{value}}">
                 </div>
             {% endfor %}
-            <div class="input-group mb-3">
-                <input type="submit" class="btn btn-primary btn-lg mb-3" align="right-aligned" value="Update">
+            <div >
+                <input type="submit" class="btn btn-primary btn-lg"  value="Update Parameters">
+                <button type="submit" class="btn btn-primary btn-lg" formaction="{{ url_for('add_remove_test')}}"> Cancel </button>
             </div>
         </div>
     </form>
