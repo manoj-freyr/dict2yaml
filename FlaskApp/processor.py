@@ -134,16 +134,23 @@ class Controller:
 
         return returlist
 
+    # get the selected tests list for display ( list of Test ID & test name )
+    def GetSelectedTestListForDisplay(self):
+        display_selected_list = []
+        for testobj in self.Selectedlist:
+            display_selected_list.append([testobj.GetTestidx(),testobj.GetTestParams()["name"]])
+
+        return display_selected_list
+
     #API for adding test to selected list
     def AddToSelectedList(self,listofmasterids):
-        DisplayList=[]
+
         for idx in listofmasterids:
             #Each test would be new Selected test, hence just create one
             selectedobj=SelectedTest(idx,self.Masterlist)
             self.Selectedlist.append(selectedobj)
-            DisplayList.append([selectedobj.GetTestidx(),selectedobj.GetTestParams()["name"]])
-        
-        return DisplayList
+
+        return self.GetSelectedTestListForDisplay()
 
 
     #API for removing a test from the selected list
