@@ -33,7 +33,7 @@ async def mainfun(testcases):
     prod = loop.create_task(taskgenerator(mod_dict,q))
     consumers = []
     await prod
-    for a in range(2):
+    for a in range(5):
         consumers.append(loop.create_task(consumertask(q, a, testcase_dict)))
     await q.join()
     for c in consumers:
