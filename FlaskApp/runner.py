@@ -76,6 +76,7 @@ async def consumertask(queue, idx, tcdict):
         except asyncio.QueueEmpty:
             return -1, "empty queue of tasks"
 
+"""
 if __name__ == "__main__":
     testcases = [
         {
@@ -114,6 +115,7 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     # server address id the UDS
     loop.run_until_complete(mainfun(testcases))
+"""
 
 def execute_main(testcases):
     loop = asyncio.get_event_loop()
