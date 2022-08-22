@@ -202,16 +202,8 @@ class Controller:
     def ExecuteTests(self):
 
         self.ExecutionStarted = True
-        self.CallbackFnName()
-        # runner_exeute_test( soc_name, self.Selectedlist)
-        pass
+        print ("Test execution started...")
+        # execute_main(self.Selectedlist)
+        print ("Tests are queued...")
 
-
-
-
-'''# below APIs will not be good hence we have discareded these afert discussion
-def GetNextItem(moduleorfeature, currentidx):
-
-def GetPreviousItem(moduleorfeature, currentidx):
-'''
 
