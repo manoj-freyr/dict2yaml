@@ -50,16 +50,6 @@ def GetMasterListFromFile():
     #eprint(f" The Feature names are :  {AppController.GetFeatureNames() }")
     return ListFromfile
 
-#App Start
-Mlist=[] #Master Tests List
-if RUNNIN_IN_WINDOWS:
-    Mlist = GetMasterListFromFile()
-else:
-    Mlist = GetMasterListFromRVS()
-
-#Create Controller now
-AppController=Controller(Mlist)
-
 #####################################################################
 # View Functions
 #####################################################################
@@ -89,9 +79,15 @@ def home():
         btn_disable_add = ''
         btn_disable_run = ''
 
+    run_status = AppController.ExecutionStarted
+    if  run_status== True:
+        btn_disable_add = 'disabled'
+
+
     return render_template('home.html', tbl_dict=tbl_dict,
                             btn_disable_add = btn_disable_add,
-                            btn_disable_run = btn_disable_run)
+                            btn_disable_run = btn_disable_run,
+                            run_status=run_status)
 
 
 #--------------------------------------------------------------------
@@ -190,10 +186,56 @@ def modifytest(test_id):
         # return redirect('/add-remove-test')
         return render_template('modify-test.html', test_id=test_id, params=params)
 
+#--------------------------------------------------------------------
+# execute_tests Screen View
+#--------------------------------------------------------------------
+
+@app.route('/run', methods=['GET', 'POST'])
+def execute_tests():
+
+    # Open a uds socket and pass it on to runner
+
+    AppController.ExecuteTests()
+
+    return redirect('/')
+
+#--------------------------------------------------------------------
+# execute_tests Screen View
+#--------------------------------------------------------------------
+
+@app.route('/stop', methods=['GET', 'POST'])
+def stop_tests():
+
+    print("Stop_test_called. Reloading Home page.")
+    AppController.ExecutionStarted = False
+
+    return redirect('/')
+
+
+
+#####################################################################
+# Callback function
+#####################################################################
+def callback_refresh():
+
+    print("Callback fn called. Reload Home page.")
+
+    return redirect('/')
 
 #####################################################################
 # Main
 #####################################################################
+
+#App Start
+Mlist=[] #Master Tests List
+if RUNNIN_IN_WINDOWS:
+    Mlist = GetMasterListFromFile()
+else:
+    Mlist = GetMasterListFromRVS()
+
+#Create Controller now
+AppController=Controller(Mlist)
+AppController.SetCallback( callback_refresh )
 
 if __name__ == "__main__":
 

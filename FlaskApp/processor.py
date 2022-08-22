@@ -19,6 +19,7 @@ class SelectedTest:
         self.status="Not Started"
         self.Result="Unknown"
         self.LogFile="NA"
+        self.Callback=None
 
     def GetTestidx(self):
         return self.IDx
@@ -59,6 +60,14 @@ class SelectedTest:
     def SetTestParams(self,ParamsDict):
         self.TestParams = copy.deepcopy(ParamsDict)
     
+    def SetCallback(self, callbackname):
+        self.Callback = callbackname
+        pass
+
+    def Notify(self):
+        # call the callback function to notify the flask app view function
+        self.Callback()
+
     def PrintThisItem(self):
         dprint(f"Idx = {self.IDx}, MID={self.mid} & name = {self.Mname}, FID={self.fid} & name = {self.Fname}")
         dprint(f"Status = {self.status}, Result={self.Result}, LogFile={self.LogFile}")
@@ -87,6 +96,12 @@ class Controller:
 
         #This is a list of Selected Tests
         self.Selectedlist=[]
+
+        # Callback fn name
+        self.CallbackFnName =None
+
+        #Execution in Progress
+        self.ExecutionStarted = False
 
         #if the list starts increasing the then 'in' functionality becomes slow
         #https://stackoverflow.com/a/40963434/672480  ;  we should be using sets in that case
@@ -119,6 +134,9 @@ class Controller:
     def GetModuleNames(self):
         return self.ModuleNames
 
+    def SetCallback(self, FuncName):
+        self.CallbackFnName = FuncName
+
     #This list populates the 2 part (#Box 1)
     def GetWholeTestListBasedOnModuleOrFeature(self,Moduleorfeature, name):
         tmplist=[]
@@ -148,6 +166,7 @@ class Controller:
         for idx in listofmasterids:
             #Each test would be new Selected test, hence just create one
             selectedobj=SelectedTest(idx,self.Masterlist)
+            selectedobj.SetCallback(self.CallbackFnName)
             self.Selectedlist.append(selectedobj)
 
         return self.GetSelectedTestListForDisplay()
@@ -180,9 +199,12 @@ class Controller:
 
 
     #I want to use this in observer faishon. Need to figure out how to do it in Python
-    def ExecuteTest(self,selectedlist):
-        for obj in selectedlist:
-            self.Masterlist[obj.GetMasteridx()].enable()
+    def ExecuteTests(self):
+
+        self.ExecutionStarted = True
+        self.CallbackFnName()
+        # runner_exeute_test( soc_name, self.Selectedlist)
+        pass
 
 
 

@@ -5,7 +5,11 @@
     <div class="d-grid gap-2 col-4 ">
 
         <input type="submit" class="btn btn-secondary btn-lg" value="Add Test" {{btn_disable_add}} onclick="window.location.href='{{ url_for('add_remove_test') }}';">
-        <input type="submit" class="btn btn-secondary btn-lg" value="Run" {{btn_disable_run}} >
+        {% if run_status == True %}
+            <input type="submit" class="btn btn-secondary btn-lg" value="Stop" {{btn_disable_run}} onclick="window.location.href='{{ url_for('stop_tests') }}';">
+        {% else %}
+            <input type="submit" class="btn btn-secondary btn-lg" value="Run" {{btn_disable_run}} onclick="window.location.href='{{ url_for('execute_tests') }}';">
+        {% endif %}
     </div>
 
     <br>
