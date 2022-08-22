@@ -17,10 +17,10 @@ async def taskgenerator(listdict,queue):
          print("taskgenerator put a testcase",listdict[key])
     
 async def mainfun(testcases):
-    if len(sys.argv) == 1:
-        usage()
-        sys.exit()
-    print("ok")
+    #if len(sys.argv) == 1:
+    #    usage()
+    #    sys.exit()
+    #print("ok")
     mod_dict = defaultdict(list)
     testcase_dict = defaultdict(list)
     for item in testcases:
@@ -113,4 +113,8 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
     # server address id the UDS
-    loop.run_until_complete(mainfun(testcases, server_address ))
+    loop.run_until_complete(mainfun(testcases))
+
+def execute_main(testcases):
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(mainfun(testcases))
