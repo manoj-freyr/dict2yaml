@@ -63,7 +63,7 @@ async def consumertask(queue, idx, tcdict):
             parser = TestParser(mod_name)
             parser.parse(testcases) #ensure return cfile,opfile explicitly
             print("output file: "+parser.output_file)
-            rvs = "/opt/rocm-5.2.0/rvs/rvs"
+            rvs = "/opt/rocm/rvs/rvs"
             proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,'-l',parser.output_file)
             ret = await proc.wait()#wait for can help in timeout
             queue.task_done()
@@ -119,6 +119,7 @@ if __name__ == "__main__":
 """
 
 def execute_main(testcases):
+    print("execute_main - START--" )
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError as e:
@@ -128,3 +129,5 @@ def execute_main(testcases):
         else:
             raise
     loop.run_until_complete(mainfun(testcases))
+
+    print("execute_main - END----" )

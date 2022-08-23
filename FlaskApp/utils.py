@@ -7,8 +7,8 @@ from testcase import TestCaseJsonEncoder
 
 
 JSON_FILE_FOR_DUMPING_OBJS="ObjValsDumps.txt"
-#rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
-rvsloc = "/home/taccuser/PRs/RVS/ROCmValidationSuite/rvs/conf/"
+rvsloc = "/opt/rocm/share/rocm-validation-suite/conf/"
+#rvsloc = "/home/taccuser/PRs/RVS/ROCmValidationSuite/rvs/conf/"
 def usage():
 	print("""
 		python utils.py <conf filename>

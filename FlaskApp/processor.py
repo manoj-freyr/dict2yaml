@@ -1,6 +1,7 @@
 from collections import defaultdict
 import sys
 import copy
+from runner import execute_main
 
 def dprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -203,7 +204,7 @@ class Controller:
 
         self.ExecutionStarted = True
         print ("Test execution started...")
-        # execute_main(self.Selectedlist)
+        execute_main(self.Selectedlist)
         print ("Tests are queued...")
 
 
