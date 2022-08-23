@@ -64,8 +64,10 @@ async def consumertask(queue, idx, tcdict):
             parser.parse(testcases) #ensure return cfile,opfile explicitly
             print("output file: "+parser.output_file)
             rvs = "/opt/rocm/rvs/rvs"
-            proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,'-l',parser.output_file)
-            ret = await proc.wait()#wait for can help in timeout
+            proc  = subprocess.Popen([rvs,'-c',parser.conf_file,'-l',parser.output_file])
+            #proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,'-l',parser.output_file)
+            print("create done")
+            ret = proc.wait()#wait for can help in timeout
             queue.task_done()
             print("Done done")
             notifier(tcdict[mod_name], parser.output_file)
