@@ -33,7 +33,7 @@ async def mainfun(testcases):
     prod = loop.create_task(taskgenerator(mod_dict,q))
     consumers = []
     await prod
-    for a in range(5):
+    for a in range(2):
         consumers.append(loop.create_task(consumertask(q, a, testcase_dict)))
     await q.join()
     for c in consumers:
@@ -61,12 +61,13 @@ async def consumertask(queue, idx, tcdict):
             mod_name = testcases[0]['module']
             print("got a testcase consumer ",mod_name) 
             parser = TestParser(mod_name)
-            testIdList = parser.parse(testcases) #ensure return cfile,opfile explicitly
+            parser.parse(testcases) #ensure return cfile,opfile explicitly
             print("output file: "+parser.output_file)
-            rvs = sys.argv[1]
+            rvs = "/opt/rocm-5.2.0/rvs/rvs"
             proc = await asyncio.create_subprocess_exec(rvs,'-c',parser.conf_file,'-l',parser.output_file)
             ret = await proc.wait()#wait for can help in timeout
             queue.task_done()
+            print("Done done")
             notifier(tcdict[mod_name], parser.output_file)
             return ret, parser.output_file
 
@@ -118,5 +119,12 @@ if __name__ == "__main__":
 """
 
 def execute_main(testcases):
-    loop = asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError as e:
+        if str(e).startswith('There is no current event loop in thread'):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        else:
+            raise
     loop.run_until_complete(mainfun(testcases))
