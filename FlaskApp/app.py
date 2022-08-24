@@ -5,6 +5,7 @@ from processor import Controller
 from utils import testcase_list, JSON_FILE_FOR_DUMPING_OBJS
 import sys
 import json
+import threading
 from testcase import TestCase
 #from types import SimpleNamespace
 
@@ -77,7 +78,7 @@ def home():
     if len(tbl_dict) != 0 and AppController.ExecutionStarted == True:
         run_status = False  # all test Executed
         for row in tbl_dict:
-            if 'Not Started' in row:
+            if 'Not Started' in row.values():
                 run_status = True       # Still executing tests
                 break
         AppController.ExecutionStarted = run_status
@@ -96,6 +97,8 @@ def home():
     run_status = AppController.ExecutionStarted
     if  run_status== True:
         btn_disable_add = 'disabled'
+
+    print(" At home(): run_status= ", run_status)
 
     return render_template('home.html', tbl_dict=tbl_dict,
                             btn_disable_add = btn_disable_add,
@@ -207,8 +210,11 @@ def modifytest(test_id):
 def execute_tests():
 
     # Open a uds socket and pass it on to runner
+    AppController.ExecutionStarted = True
 
-    AppController.ExecuteTests()
+    #AppController.ExecuteTests()
+    threading.Thread(target=lambda: AppController.ExecuteTests()).start()
+    print("RVS task thread started")
 
     return redirect('/')
 
@@ -250,12 +256,16 @@ else:
 AppController=Controller(Mlist)
 AppController.SetCallback( callback_refresh )
 
+
 if __name__ == "__main__":
 
 
     eprint(f" The module names are :  {AppController.GetModuleNames() }")
     eprint(f" The Feature names are :  {AppController.GetFeatureNames() }")
 
-    app.run(debug=True)
+    #app.run(debug=True)
+    threading.Thread(target=lambda: app.run(debug=True, use_reloader=False)).start()
+
+    print(" __main__  END ")
 
 
