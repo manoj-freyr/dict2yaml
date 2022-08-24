@@ -72,6 +72,18 @@ def home():
                          'test_name':test.GetTestParams()["name"], 'test_status':test.GetStatus(),
                          'test_log':test.GetLogFile()})
 
+    # If all the selected test execution is completed, then
+    # change the Stop button to Run and update the flag in AppController
+    if len(tbl_dict) != 0 and AppController.ExecutionStarted == True:
+        run_status = False  # all test Executed
+        for row in tbl_dict:
+            if 'Not Started' in row:
+                run_status = True       # Still executing tests
+                break
+        AppController.ExecutionStarted = run_status
+
+    # if there is some tests selected then Enable RUN button.
+    # Else disable the RUN button
     if len(selected_tests) == 0:
         btn_disable_add = ''
         btn_disable_run = 'disabled'
@@ -79,10 +91,11 @@ def home():
         btn_disable_add = ''
         btn_disable_run = ''
 
+    # If the test Execution started ( Run button clicked) Disable AddTest Button
+    # and change RUN button to Stop button.
     run_status = AppController.ExecutionStarted
     if  run_status== True:
         btn_disable_add = 'disabled'
-
 
     return render_template('home.html', tbl_dict=tbl_dict,
                             btn_disable_add = btn_disable_add,
