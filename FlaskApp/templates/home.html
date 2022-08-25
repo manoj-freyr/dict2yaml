@@ -48,7 +48,12 @@
                     <td>{{row["test_name"]}}</td>
                     <td>{{row["test_status"]}}</td>
                     <td>
-                        <a href="">{{row["test_log"]}}</a>
+                        {% if row["test_log"] == "NA" %}
+                            <a href="" >{{row["test_log"]}}</a>
+                        {% else %}
+                            <a href="{{ url_for('viewlogfile', file_path=row["test_log"]) }}" >{{ row["test_log"].rsplit('/',)[-1] }}</a>
+                            <a href="{{ url_for('downloadlogfile', file_path=row["test_log"]) }}" > [Download]</a>
+                        {% endif %}
                     </td>
 
                 </tr>

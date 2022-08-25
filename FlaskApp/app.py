@@ -1,9 +1,10 @@
 import py_compile
 from typing import List
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, send_file
 from processor import Controller
 from utils import testcase_list, JSON_FILE_FOR_DUMPING_OBJS
 import sys
+import os
 import json
 import threading
 from testcase import TestCase
@@ -230,6 +231,35 @@ def stop_tests():
 
     return redirect('/')
 
+
+#--------------------------------------------------------------------
+# Logfile View screen
+#------------------------------------------------------------------
+
+@app.route('/viewlogfile/<path:file_path>', methods=['GET', 'POST'])
+def viewlogfile(file_path):
+    print("Post req = ", request.form)
+
+    file_path="/"+file_path
+    print("File_path = ", file_path)
+
+    with open(file_path, "r") as f:
+        text = f.read()
+
+    return render_template("log-view.html", text=text)
+
+#--------------------------------------------------------------------
+# Download Logfile
+#------------------------------------------------------------------
+
+@app.route('/downloadlogfile/<path:file_path>', methods=['GET', 'POST'])
+def downloadlogfile(file_path):
+    print("Post req = ", request.form)
+
+    file_path="/"+file_path
+    print("File_path = ", file_path)
+
+    return send_file(file_path, as_attachment=True)
 
 
 #####################################################################
