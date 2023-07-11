@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import py_compile
 from typing import List
 from flask import Flask, render_template, request, url_for, redirect, send_file
